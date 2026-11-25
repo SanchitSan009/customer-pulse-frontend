@@ -1,0 +1,6 @@
+.dashboard-login{width:min(420px,90vw);margin:auto;padding:30px;border:1px solid #dbe4de;border-radius:18px;color:#183b2a;background:#fff;font:16px system-ui,sans-serif;box-shadow:0 20px 80px #0003}
+.dashboard-login::backdrop{background:#102c23ed}
+.dashboard-login h1{font-size:24px;margin:0 0 12px}.dashboard-login p{line-height:1.5;margin:12px 0}
+.dashboard-login label{display:block;margin:16px 0}.dashboard-login input{box-sizing:border-box;display:block;width:100%;padding:12px;margin-top:6px;font:inherit;border:1px solid #afbeb4;border-radius:8px}
+.dashboard-login button,.dashboard-signout{font:600 14px system-ui,sans-serif;border:0;border-radius:8px;padding:12px 18px;background:#126841;color:#fff;cursor:pointer}
+.dashboard-login button:disabled{opacity:.6;cursor:wait}.dashboard-login [role=status]{font-size:14px}.dashboard-signout{position:fixed;right:12px;bottom:12px;z-index:9999;padding:7px 12px}.dashboard-signout[hidden]{display:none}

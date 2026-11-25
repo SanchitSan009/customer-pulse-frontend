@@ -1,0 +1,74 @@
+/* Shared font sizes inherit directly from reference.html; no KPI size overrides.
+   Readability fixes within the original 1920 × 1080 display layout.
+   Panel positions, four overview columns and fit-to-screen scaling stay intact. */
+header{gap:24px}.brand{gap:18px}.brand img{height:50px}.sub{max-width:660px}.right{gap:22px}.pager{gap:20px}.chip{padding:0 12px}
+#dataContext{display:none}
+.tab.on i{background:var(--pc)}
+/* Source summary occupies the original four tiles and two-column spark slot. */
+.tile{padding:14px 24px;gap:6px}.tile p{font-size:15px;line-height:20px;color:var(--ink-3)}
+.source-health{grid-column:span 2;border-right:0}.source-health .eyebrow{margin-bottom:2px}#sourceHealth{font-size:13px;line-height:1.6}
+.source-state{display:inline-flex;align-items:center;gap:6px;margin-right:12px;white-space:nowrap}.status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--ink-4)}.source-state[data-status=ready] .status-dot{background:var(--green)}.source-state[data-status=stale] .status-dot,.source-state[data-status=loading] .status-dot{background:var(--amber)}.source-state[data-status=error] .status-dot{background:#F07178}
+.kpi .l{white-space:normal}.kpi .d{white-space:normal}.ht .l{white-space:normal}.ht .d{white-space:normal}.sh{gap:10px}.r .lab{white-space:normal;overflow:visible}
+.ph{flex-wrap:wrap;gap:8px}.legend{gap:14px}
+/* Exact values remain available on chart points; labels thin where crowded. */
+.panel>svg,[data-canon-weekly]>svg,[data-agricon-approval-chart]>svg,[data-agricon-processing]>svg,[data-pi-cart-time]>svg{display:block;max-width:100%;height:auto}
+.chart svg{width:100%;height:auto}
+.rk{height:auto;min-height:30px;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) 114px;gap:12px}.rl{white-space:normal;overflow:visible;overflow-wrap:anywhere}.rank{gap:8px}.ins{gap:14px}
+.funnel-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}.funnel-step{display:grid;grid-template-columns:minmax(120px,1fr) minmax(100px,1.3fr) auto;gap:20px;align-items:center;min-height:48px;font-size:18px;line-height:24px;color:var(--ink-3)}.funnel-shape{height:44px;justify-self:center;background:var(--a);clip-path:polygon(0 0,100% 0,calc(50% + var(--next)/2) 100%,calc(50% - var(--next)/2) 100%);width:var(--width);max-width:100%}.funnel-count{text-align:right;color:var(--ink);font-size:18px;font-weight:700;min-width:82px}.funnel-count small{display:block;color:var(--ink-3);font-size:16px;font-weight:400}.funnel-footer{text-align:center;font-size:17px;line-height:24px;color:var(--ink-3);margin-top:14px}
+.category-list{display:grid;gap:10px;padding:0}.category-label{display:flex;justify-content:space-between;gap:12px;font-size:16px;line-height:20px;color:var(--ink-2)}.category-label b{font-variant-numeric:tabular-nums}.category-list .track{height:7px;margin-top:5px}
+.empty-state{display:flex;align-items:center;justify-content:center;height:100%;min-height:100px;padding:20px;text-align:center;font-size:15px;line-height:22px;color:var(--ink-3)}
+.chart-caption{display:none}.dot i.ring{display:none}
+[data-status=loading] .kpi-live-dot,[data-status=stale] .kpi-live-dot{background:var(--amber)!important}[data-status=error] .kpi-live-dot{background:#F07178!important}
+.skip-link{position:fixed;top:-60px;left:20px;z-index:20;background:var(--blue);color:#fff;padding:12px;border-radius:8px}.skip-link:focus{top:12px}:focus-visible{outline:2px solid var(--blue);outline-offset:4px}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.page,.page.on{transition:none}
+
+/* Original landing-page summary strip from reference.html. */
+.live-summary .tile{padding:20px 28px;gap:8px}
+.live-summary .tile .eyebrow{font-size:14px;line-height:18px}
+.live-summary .tile .v{font-size:42px;line-height:44px}
+/* PI map stays inside the existing Orders by state panel. */
+[data-pi-state-panel] [hidden]{display:none!important}
+.pi-state-switch{display:flex;border:1px solid var(--line);border-radius:8px;padding:2px;gap:2px}
+.pi-state-switch button{border:0;background:transparent;color:var(--ink-3);font:inherit;font-size:13px;padding:3px 9px;border-radius:5px;cursor:pointer}
+.pi-state-switch button[aria-pressed=true]{background:#244a39;color:#d7f7e7}
+.pi-state-switch button:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.pi-state-map{flex:1;min-height:0;display:flex;flex-direction:column;gap:6px;color:var(--ink-3);font-size:16px}
+.pi-map-layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:18px;flex:1;min-height:0}
+.pi-map-layout svg{width:100%;height:100%;min-height:0;overflow:visible}
+.pi-map-layout path{stroke:#101719;stroke-width:.65;vector-effect:non-scaling-stroke;transition:fill .15s}
+.pi-map-layout path:hover,.pi-map-layout path:focus{stroke:#d7f7e7;stroke-width:1.5;outline:none}
+.pi-map-ranking{display:flex;flex-direction:column;justify-content:space-between;gap:6px;min-height:0}
+.pi-map-caption{font-size:12px;letter-spacing:.08em;color:var(--ink-4)}
+.pi-map-rank{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 8px;font-size:16px;line-height:20px;color:var(--ink-2)}
+.pi-map-rank b{color:var(--ink);font-variant-numeric:tabular-nums}
+.pi-map-track{grid-column:1/-1;height:5px;border-radius:3px;background:var(--track);overflow:hidden}
+.pi-map-track i{display:block;height:100%;border-radius:3px}
+.pi-map-legend{font-size:12px;line-height:14px;color:var(--ink-3)}
+.pi-map-readout{font-size:14px;line-height:20px;min-height:17px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.overview .card .kpi .v{font-size:44px!important;line-height:52px;min-height:52px}
+.overview .card .kpi .v span{font-size:24px!important}
+.overview .card .kpi .d{display:flex;flex-direction:column;gap:0;min-height:36px;font-size:13px;line-height:18px}
+.overview .card .kpi .d b{font-weight:600}
+.overview .card .kpi .d[data-direction=up] b{color:var(--green)}
+.overview .card .kpi .d[data-direction=down] b{color:#F07178}
+.live-summary .tile .n{white-space:normal}
+.summary-unavailable{font-size:15px;color:var(--ink-3);line-height:62px}
+.overview[data-summary-status=stale] .kpi-live-dot{background:var(--amber)!important}
+
+/* Match reference typography; reserve equal label rows for live metric names. */
+.overview .kpis .kpi .l{min-height:18px}
+.card-footer{margin-top:auto;display:flex;flex-direction:column;gap:12px}
+.card-footer .insight{margin-top:0}
+.card-period{font-size:13px;line-height:18px;color:var(--ink-4);margin:0}
+/* Reserve space for wrapped coverage notes inside the original fixed panels. */
+.hero .ht{gap:6px}
+.ins{gap:12px}
+
+/* Keep the trend rows and larger PI plot within the original card height. */
+.overview .card{gap:10px}
+.overview .rows{gap:6px}
+.overview .r .track{height:6px;margin-top:4px}
+.overview .sec.rows-sec{gap:10px}
+.overview .card-footer{gap:6px}
