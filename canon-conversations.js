@@ -16,8 +16,6 @@
     all(selector).forEach(el => {
       el.textContent = value;
       el.title = title;
-      const dot = el.closest('.ht, .kpi')?.querySelector('.kpi-live-dot');
-      if (dot) { dot.style.background = stale ? '#F5A524' : ''; dot.title = title; }
     });
   }
 

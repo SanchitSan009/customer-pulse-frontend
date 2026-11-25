@@ -48,7 +48,6 @@ h1{font-size:30px;line-height:36px;font-weight:700;letter-spacing:-.01em}
 .page.on{opacity:1;visibility:visible;transform:none;transition:opacity .7s ease,transform .7s ease}
 
 /* ---------- shared bits ---------- */
-.kpi-live-dot{display:inline-block;width:7px;height:7px;margin-right:7px;border-radius:50%;background:var(--green);vertical-align:middle;flex-shrink:0}
 .eyebrow{font-size:14px;line-height:18px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
 .live{display:inline-flex;align-items:center;gap:8px;height:26px;padding:0 10px;border-radius:999px;background:var(--chip);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .dot{position:relative;width:8px;height:8px;display:inline-block}
@@ -79,11 +78,10 @@ svg text{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-variant-numer
 .lbl.win{color:var(--ink);font-weight:700}
 .lbl.pre{color:var(--ink-3);font-weight:500}
 .xl{position:absolute;top:108px;font-size:12px;line-height:14px;color:var(--ink-4);white-space:nowrap}
-.cards{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:24px}
+.cards{flex:1;min-height:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:22px;padding:24px 28px;display:flex;flex-direction:column;gap:16px;min-height:0;overflow:hidden}
 .ch{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
 .name{display:flex;align-items:center;gap:10px}
-.sw{width:12px;height:12px;border-radius:4px;flex-shrink:0;background:var(--a)}
 .card h2{font-size:26px;line-height:32px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 .csub{margin-top:6px;font-size:15px;line-height:20px;color:var(--ink-3)}
 .tags{display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0}
@@ -188,7 +186,7 @@ svg text{font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-variant-numer
 /* =====================================================================
    SETTINGS
    ===================================================================== */
-const DWELL_MS = 1500000;   // time on each page before rotating
+const DWELL_MS = 15000;   // time on each page before rotating
 
 /* =====================================================================
    DATA — sample values. Replace with live numbers (or fetch from a sheet).
@@ -204,7 +202,7 @@ const CUSTOMERS = [
       { label: 'Orders placed', value: '—', unit: '', delta: '—', note: '', liveMetric: 'piOrders' },
       { label: 'Interactions', value: '—', unit: '', delta: '—', note: '', liveMetric: 'piInteractions' }
     ],
-    trend: { title: 'Orders per day', type: 'bar', liveMetric: 'piOrders', loading: true },
+    trend: { title: 'Orders per week', type: 'bar', liveMetric: 'piOrders', loading: true },
     rowsTitle: 'Chat → order funnel', rowsNote: '— journeys', base: 1,
     rows: [
       ['Started', null, ''],
@@ -220,7 +218,7 @@ const CUSTOMERS = [
         ['Successful orders', '—', '', '—', 'piSuccessfulOrders'],
         ['Interactions', '—', '', '—', 'piInteractions']
       ],
-      main:   { title: 'Orders per day', type: 'bar', liveMetric: 'piOrders', loading: true, series: [] },
+      main:   { title: 'Orders per week', type: 'bar', liveMetric: 'piOrders', loading: true, series: [] },
       rank:   { title: 'Orders by state', note: '— orders', total: 0, rows: [] },
       second: { title: 'Cart-to-order time (min)', type: 'line', liveMetric: 'piCartTime' },
       insights: [
@@ -304,44 +302,7 @@ const CUSTOMERS = [
       ]
     }
   },
-  /* ---------------------------- Castrol ---------------------------- */
-  {
-    name: 'Castrol', short: 'Castrol', sub: 'Voice-to-voice ordering agent', accent: '#F5A524', voice: true,
-    kpis: [
-      { label: 'Conversion rate', value: '18.6', unit: '%', delta: '▲ 2.2 pts', note: '· of calls' },
-      { label: 'Orders placed',   value: '412',  unit: '',  delta: '▲ 16.1%',   note: '' }
-    ],
-    trend: { title: 'Orders per week', type: 'bar', values: [62,71,68,79,84,88,93,90,97,101,104,110], max: 120, fmt: v => String(v) },
-    rowsTitle: 'Call outcomes', rowsNote: '2,214 calls', base: 2214,
-    rows: [
-      ['Order placed', 412, '18.6%'],
-      ['Product / price enquiry', 702, '31.7%', '#3A3E4A'],
-      ['Not interested', 471, '21.3%', '#3A3E4A'],
-      ['Callback requested', 386, '17.4%', '#3A3E4A'],
-      ['Dropped / no response', 243, '11.0%', '#3A3E4A']
-    ],
-    insight: '386 callback requests (17.4% of calls) are the next conversion pool.',
-    detail: {
-      tiles: [
-        ['Conversion rate', '18.6', '%', '▲ 2.2 pts'],
-        ['Orders placed', '412', '', '▲ 16.1%'],
-        ['Calls handled', '2,214', '', '▲ 2.3%'],
-        ['Avg. call duration', '2:48', 'min', '▼ 6s'],
-        ['Callbacks requested', '386', '', '▲ 9.0%']
-      ],
-      main:   { title: 'Orders from voice calls per week', type: 'bar', max: 120, fmt: v => String(v),
-                series: [{ values: [62,71,68,79,84,88,93,90,97,101,104,110] }] },
-      rank:   { title: 'Orders by product line', note: '412 orders', total: 412,
-                rows: [['CRB Turbomax',148],['Activ (2-wheeler)',112],['Magnatec',76],['GTX',44],['Others',32,true]] },
-      second: { title: 'Conversion by time of call (%)', type: 'columns', max: 25, fmt: v => v.toFixed(1) + '%',
-                cats: [['9–11 am',22.4],['11–1 pm',19.8],['1–3 pm',14.2],['3–5 pm',17.1],['5–7 pm',20.6]] },
-      insights: [
-        ['386 callbacks are the next conversion pool', '17.4% of callers asked for a callback — at today’s conversion that is ~70 more orders.'],
-        ['Mornings convert best', '9–11 am converts at 22.4% vs 14.2% right after lunch (1–3 pm).'],
-        ['CRB Turbomax leads orders', '148 of 412 orders (36%) this period.']
-      ]
-    }
-  }
+
 ];
 
 /* =====================================================================
@@ -353,10 +314,9 @@ const tone = i => (i >= N - WIN ? 'win' : 'pre');
 const ICON_CHAT = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg>';
 const ICON_MIC  = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>';
 const iconTrend = c => `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/></svg>`;
-const liveTag = '<span class="live"><span class="dot"><i class="ring"></i><i></i></span>Live</span>';
+const liveTag = '<span class="live">Live</span>';
 const typeTag = c => `<span class="type">${c.voice ? ICON_MIC : ICON_CHAT}${c.voice ? 'Voice agent' : 'Chat agent'}</span>`;
 const metricValueAttribute = metric => ({ canonAvgTurns: 'data-canon-value="avg_user_turns"', canonProductsShown: 'data-canon-value="unique_products"', canonComparisonChats: 'data-canon-value="comparison_chats"', canonStoreEnquiries: 'data-canon-value="store_enquiries"', agriconActiveFAs: 'data-agricon-value="active_fas"', agriconProcessingRuns: 'data-agricon-value="processing_runs"', agriconExecutionSuccess: 'data-agricon-value="execution_success"', agriconReviewed: 'data-agricon-value="invoices_reviewed"', agriconFA: 'data-agricon-value="fa_approved"', agriconHQ: 'data-agricon-value="hq_approved"', agriconConversations: 'data-agricon-value="conversations"', piRepeatOrderers: 'data-pi-repeat-orderers-value', piOrders: 'data-pi-orders-value', piInteractions: 'data-pi-interactions-value', piUsers: 'data-pi-users-value', piSuccessfulOrders: 'data-pi-successful-orders-value', canonConversations: 'data-canon-conversations-value' }[metric] || '');
-const liveKpiDot = metric => metricValueAttribute(metric) ? '<span class="kpi-live-dot" role="img" aria-label="Connected data source" title="Connected data source"></span>' : '';
 const metricChangeAttribute = metric => ({ agriconActiveFAs: 'data-agricon-change="active_fas"', agriconProcessingRuns: 'data-agricon-change="processing_runs"', agriconExecutionSuccess: 'data-agricon-change="execution_success"', agriconReviewed: 'data-agricon-change="invoices_reviewed"', agriconFA: 'data-agricon-change="fa_approved"', agriconHQ: 'data-agricon-change="hq_approved"', agriconConversations: 'data-agricon-change="conversations"', piRepeatOrderers: 'data-pi-repeat-orderers-change', piOrders: 'data-pi-orders-change', piInteractions: 'data-pi-interactions-change', piUsers: 'data-pi-users-change', piSuccessfulOrders: 'data-pi-successful-orders-change', canonConversations: 'data-canon-conversations-change' }[metric] || '');
 
 function barPath(x, top, base, w) {
@@ -373,7 +333,7 @@ function svgTrend(o, accent) {
   const N = weeks.length;
   const WIN = o.shadeCount || 4;
   const tone = i => i >= N - WIN ? 'win' : 'pre';
-  if (o.loading) return `<svg data-pi-orders-main width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Loading orders per day"><text x="${w/2}" y="${h/2}" text-anchor="middle" class="tp">Connecting to live data…</text></svg>`;
+  if (o.loading) return `<svg data-pi-orders-main width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Loading orders per week"><text x="${w/2}" y="${h/2}" text-anchor="middle" class="tp">Connecting to live data…</text></svg>`;
   if (o.series?.every(series=>series.values.every(value=>value===null))) return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="No observations in this period"><text x="${w/2}" y="${h/2}" text-anchor="middle" class="tp" font-size="13">No observations in this period</text></svg>`;
   const padX = o.yAxis ? 54 : 8, rightPad = 8, top = 34, bottom = h - (o.bottomPadding ?? (o.weekdays ? 52 : o.yAxis ? 44 : 32));
   const band = (w - padX - rightPad) / N;
@@ -397,7 +357,7 @@ function svgTrend(o, accent) {
     o.series[0].values.forEach((v, i) => {
       const t = y(v);
       s += `<path d="${barPath(x(i) - bw / 2, t, bottom, bw)}" fill="${accent}" opacity="${i >= N - WIN ? 1 : 0.4}"><title>${weeks[i]}: ${f(v)}</title></path>`;
-      if (i % labelStep === 0 || i === N-1) s += `<text x="${x(i).toFixed(1)}" y="${(t - 10).toFixed(1)}" text-anchor="middle" font-size="${ls}" class="t${tone(i)[0]}">${f(v)}</text>`;
+      s += `<text x="${x(i).toFixed(1)}" y="${(t - 10).toFixed(1)}" text-anchor="middle" font-size="${ls}" class="t${tone(i)[0]}">${f(v)}</text>`;
     });
   } else {
     o.series.forEach(se => {
@@ -408,7 +368,7 @@ function svgTrend(o, accent) {
         if (!p) return;
         s += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="${i === N - 1 ? 6 : 4}" fill="${col}" stroke="#111216" stroke-width="2.5"><title>${weeks[i]}: ${f(se.values[i])}</title></circle>`;
         const ly = se.below ? p[1] + ls + 10 : p[1] - 12;
-        if (i % labelStep === 0 || i === N-1) s += `<text x="${p[0].toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${ls}" class="t${tone(i)[0]}">${f(se.values[i])}</text>`;
+        s += `<text x="${p[0].toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" font-size="${ls}" class="t${tone(i)[0]}">${f(se.values[i])}</text>`;
       });
     });
   }
@@ -449,11 +409,11 @@ function miniTrend(t, accent) {
 }
 
 function overviewCard(c) {
-  const connected = c.short !== 'Castrol';
+  const connected = true;
   const size = 44, unit = 24;
   const kpis = c.kpis.map(k => `
     <div class="kpi" data-overview-kpi="${k.liveMetric || ''}">
-      <div class="l">${liveKpiDot(k.liveMetric)}${k.label}</div>
+      <div class="l">${k.label}</div>
       <div class="v" ${metricValueAttribute(k.liveMetric)} style="font-size:${size}px">${connected ? k.value : '—'}<span style="font-size:${unit}px">${connected ? k.unit : ''}</span></div>
       <div class="d" data-overview-trend><b data-overview-change>${connected ? 'Connecting…' : 'Not connected'}</b><span class="comparison-label">${connected ? 'vs prior 4 wks' : ''}</span></div>
     </div>`).join('');
@@ -466,18 +426,18 @@ function overviewCard(c) {
   <article class="card" data-source="${sourceKey(c)}" style="--a:${c.accent}">
     <div class="ch">
       <div style="min-width:0">
-        <div class="name"><span class="sw"></span><h2>${c.name}</h2></div>
+        <div class="name"><h2>${c.name}</h2></div>
         <p class="csub">${c.sub}</p>
       </div>
       <div class="tags">${connected ? liveTag : '<span class="live">No feed</span>'}${typeTag(c)}</div>
     </div>
     <div class="kpis" style="grid-template-columns:repeat(${c.kpis.length},minmax(0,1fr))">${kpis}</div>
     <div class="sec">
-      <div class="sh"><h3>${c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${c === CUSTOMERS[0] ? 'Orders per week' : c.short === 'Agricon' ? 'Processing time per week (s)' : c.trend.title}</h3><span>${connected ? '12 weeks · last 4 shaded' : 'not connected'}</span></div>
+      <div class="sh"><h3>${c === CUSTOMERS[0] ? 'Orders per week' : c.short === 'Agricon' ? 'Processing time per week (s)' : c.trend.title}</h3><span>${connected ? '12 weeks · last 4 shaded' : 'not connected'}</span></div>
       ${!connected ? '<div class="chart" style="width:380px;height:124px"><div class="empty-state">No live source connected</div></div>' : c.short === 'Canon' ? '<div class="chart" data-canon-weekly data-width="380" data-height="124" style="width:380px;height:124px"></div>' : c.short === 'Agricon' ? '<div class="chart" data-agricon-processing data-width="380" data-height="124" style="width:380px;height:124px"></div>' : miniTrend(c.trend, c.accent)}
     </div>
     <div class="sec rows-sec">
-      <div class="sh"><h3>${c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${c.rowsTitle}</h3><span ${c.short === 'Canon' ? 'data-canon-funnel-note' : c.short === 'Agricon' ? 'data-agricon-pipeline-note' : c === CUSTOMERS[0] ? 'data-pi-funnel-note' : ''}>${c.short === 'Canon' ? '— chats' : c.short === 'Agricon' ? '— reviewed' : connected ? c.rowsNote : 'No live source'}</span></div>
+      <div class="sh"><h3>${c.rowsTitle}</h3><span ${c.short === 'Canon' ? 'data-canon-funnel-note' : c.short === 'Agricon' ? 'data-agricon-pipeline-note' : c === CUSTOMERS[0] ? 'data-pi-funnel-note' : ''}>${c.short === 'Canon' ? '— chats' : c.short === 'Agricon' ? '— reviewed' : connected ? c.rowsNote : 'No live source'}</span></div>
       <div class="rows">${rows}</div>
     </div>
     <div class="card-footer">
@@ -508,14 +468,14 @@ function detailPage(c) {
   const d = c.detail;
   const tiles = d.tiles.map(([l, v, u, dl, liveMetric]) => `
     <div class="ht">
-      <div class="l">${liveKpiDot(liveMetric)}${l}</div>
+      <div class="l">${l}</div>
       <div class="v" ${metricValueAttribute(liveMetric)}>${v}${u ? `<span>${u}</span>` : ''}</div>
       ${liveMetric?.startsWith('canon') ? '' : `<div class="d"><b ${metricChangeAttribute(liveMetric)}>${dl}</b><span class="comparison-label"> vs prior 4 wks</span></div>`}
     </div>`).join('');
 
   const legend = c.short === 'Canon' ? '<span class="note">Last 4 completed weeks · IST</span>' : d.main.series.length > 1
     ? `<div class="legend">${d.main.series.map(se => `<span><i style="background:${se.color || c.accent}"></i>${se.name}</span>`).join('')}</div>`
-    : `<span class="note">${d.main.liveMetric === 'piOrders' ? '14 days · last 7 highlighted' : '12 weeks · last 4 shaded'}</span>`;
+    : `<span class="note">12 weeks · last 4 shaded</span>`;
   const main = c.short === 'Canon'
     ? '<div data-canon-activity data-width="984" data-height="282" style="width:984px;height:282px;flex-shrink:0"></div>'
     : c.short === 'Agricon' 
@@ -545,7 +505,7 @@ function detailPage(c) {
     : d.second.type === 'columns'
     ? svgColumns(Object.assign({ w: 526, h: 226 }, d.second), c.accent)
     : svgTrend(Object.assign({ w: 526, h: 226, labelSize: 14, everyOther: true }, d.second), c.accent);
-  const secondNote = d.second.liveMetric === 'canonTypes' ? 'Chats · may overlap' : d.second.liveMetric === 'agriconProcessing' ? 'Weekly median' : d.second.liveMetric === 'piCartTime' ? 'Daily median · last 7 highlighted' : d.second.type === 'columns' ? 'last 4 weeks' : '12 weeks · last 4 shaded';
+  const secondNote = d.second.liveMetric === 'canonTypes' ? 'Chats · may overlap' : d.second.liveMetric === 'agriconProcessing' ? 'Weekly median' : d.second.liveMetric === 'piCartTime' ? 'Weekly median · last 4 highlighted' : d.second.type === 'columns' ? 'last 4 weeks' : '12 weeks · last 4 shaded';
 
   const insights = d.insights.map(([h, p], i) => `
     <div class="ii"><span class="num">${i + 1}</span><div><h4>${h}</h4><p ${c.short === 'Canon' ? `data-canon-insight="${i}"` : c.short === 'Agricon' ? `data-agricon-insight="${i}"` : c === CUSTOMERS[0] ? `data-pi-funnel-insight="${i}"` : ''}>${p}</p></div></div>`).join('');
@@ -562,23 +522,23 @@ function detailPage(c) {
     </div>
     <div class="row2">
       <div class="panel">
-        <div class="ph"><h3>${c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${d.main.title}</h3>${legend}</div>
+        <div class="ph"><h3>${d.main.title}</h3>${legend}</div>
         ${main}
         ${c.short === 'Agricon' ? '<p class="chart-caption">12 completed weeks · last 4 shaded. FA: approved / reviewed. HQ: verified / FA approved, including pending.</p>' : c.short === 'Canon' ? '<p class="chart-caption">Distinct chats by start day and hour in IST · all available data.</p>' : ''}
       </div>
       <div class="panel">
-        <div class="ph"><h3>${c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${c.short === 'Canon' ? 'Conversation depth' : c.rowsTitle}</h3><span class="note" ${c.short === 'Canon' ? 'data-canon-depth-note' : c.short === 'Agricon' ? 'data-agricon-pipeline-note' : c === CUSTOMERS[0] ? 'data-pi-funnel-note' : ''}>${c.short === 'Canon' ? '— chats' : c.short === 'Agricon' ? '— reviewed' : c.rowsNote}</span></div>
+        <div class="ph"><h3>${c.short === 'Canon' ? 'Conversation depth' : c.rowsTitle}</h3><span class="note" ${c.short === 'Canon' ? 'data-canon-depth-note' : c.short === 'Agricon' ? 'data-agricon-pipeline-note' : c === CUSTOMERS[0] ? 'data-pi-funnel-note' : ''}>${c.short === 'Canon' ? '— chats' : c.short === 'Agricon' ? '— reviewed' : c.rowsNote}</span></div>
         ${c.short === 'Canon' ? '<div data-canon-depth style="width:100%;height:282px;flex-shrink:0"></div>' : c.short === 'Agricon' ? '<div data-agricon-funnel style="width:100%;height:282px;flex-shrink:0"></div>' : `<div class="funnel">${funnel}</div>`}
       </div>
     </div>
     <div class="row3">
       <div class="panel" ${c === CUSTOMERS[0] ? 'data-pi-state-panel' : ''}>
-        <div class="ph"><h3>${c === CUSTOMERS[0] ? liveKpiDot('piOrders') : c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${d.rank.title}</h3><span class="note" ${c.short === 'Canon' ? 'data-canon-printers-note' : c.short === 'Agricon' ? 'data-agricon-rejections-note' : c === CUSTOMERS[0] ? 'data-pi-states-note' : ''}>${c.short === 'Canon' ? 'All available data' : c.short === 'Agricon' ? '— rejected' : d.rank.note}</span>${c === CUSTOMERS[0] ? '<div class="pi-state-switch" role="group" aria-label="State visualization"><button type="button" data-pi-state-view="map" aria-pressed="true">Map</button><button type="button" data-pi-state-view="list" aria-pressed="false">List</button></div>' : ''}</div>
+        <div class="ph"><h3>${d.rank.title}</h3><span class="note" ${c.short === 'Canon' ? 'data-canon-printers-note' : c.short === 'Agricon' ? 'data-agricon-rejections-note' : c === CUSTOMERS[0] ? 'data-pi-states-note' : ''}>${c.short === 'Canon' ? 'All available data' : c.short === 'Agricon' ? '— rejected' : d.rank.note}</span>${c === CUSTOMERS[0] ? '<div class="pi-state-switch" role="group" aria-label="State visualization"><button type="button" data-pi-state-view="map" aria-pressed="true">Map</button><button type="button" data-pi-state-view="list" aria-pressed="false">List</button></div>' : ''}</div>
         ${c === CUSTOMERS[0] ? '<div class="pi-state-map" data-pi-state-map>Loading India map…</div>' : ''}
         <div class="rank" ${c === CUSTOMERS[0] ? 'hidden' : ''} ${c.short === 'Canon' ? 'data-canon-printers' : c.short === 'Agricon' ? 'data-agricon-rejections' : c === CUSTOMERS[0] ? 'data-pi-states' : ''}>${(c.short === 'Canon' || c.short === 'Agricon') ? '' : rank}</div>
       </div>
       <div class="panel">
-        <div class="ph"><h3>${d.second.liveMetric === 'piCartTime' ? liveKpiDot('piOrders') : c.short === 'Canon' ? liveKpiDot('canonConversations') : ''}${d.second.title}</h3><span class="note" ${d.second.liveMetric === 'piCartTime' ? 'data-pi-cart-time-note' : ''}>${secondNote}</span></div>
+        <div class="ph"><h3>${d.second.title}</h3><span class="note" ${d.second.liveMetric === 'piCartTime' ? 'data-pi-cart-time-note' : ''}>${secondNote}</span></div>
         ${second}
       </div>
       <div class="panel">
@@ -602,18 +562,27 @@ pager.innerHTML = pages.map((p, i) =>
 ).join('') + '<span class="paused">Paused</span>';
 const tabs = [...pager.querySelectorAll('.tab')];
 
-const pageNames = ['overview','pi','agricon','canon','castrol'];
+const pageNames = ['overview','pi','agricon','canon'];
 let cur = 0;
+let rotationStarted = performance.now();
 function show(i, updateURL = true) {
+  rotationStarted = performance.now();
   cur = (i + pages.length) % pages.length;
   pages.forEach((p,j) => { p.classList.toggle('on',j === cur); p.inert = j !== cur; p.id = 'page-' + pageNames[j]; });
   tabs.forEach((t,j) => {
     t.classList.toggle('on',j === cur);
     t.setAttribute('aria-current',j === cur ? 'page' : 'false');
     t.setAttribute('aria-controls', 'page-' + pageNames[j]);
+    t.querySelector('b').style.width = '0%';
   });
   if (updateURL) { const url = new URL(location.href); url.searchParams.set('page',pageNames[cur]); history.replaceState(null,'',url); }
   window.dispatchEvent(new CustomEvent('dashboard:pagechange'));
+}
+function frame(now) {
+  const elapsed = now - rotationStarted;
+  tabs[cur].querySelector('b').style.width = Math.min(100, elapsed / DWELL_MS * 100) + '%';
+  if (elapsed >= DWELL_MS) show(cur + 1);
+  requestAnimationFrame(frame);
 }
 tabs.forEach(t => t.addEventListener('click',()=>show(+t.dataset.i)));
 pager.addEventListener('keydown',e => {
@@ -640,6 +609,7 @@ function fit() {
 }
 fit(); window.addEventListener('resize', fit);
 show(pageFromURL(), false);
+requestAnimationFrame(frame);
 tick(); setInterval(tick, 30000);
 </script>
 <script src="./api-client.js" defer></script>

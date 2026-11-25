@@ -13,22 +13,21 @@
     all(selector).forEach(el => { el.title = message; });
   }
 
-  function drawOrders(days) {
-    const values = days.map(day => day.count);
-    const labels = days.map(day => new Date(`${day.date}T00:00:00Z`).toLocaleDateString('en-GB', {
+  function drawOrders(weeks) {
+    const values = weeks.map(week => week.count);
+    const labels = weeks.map(week => new Date(`${week.start}T00:00:00Z`).toLocaleDateString('en-GB', {
       month: 'short', day: 'numeric', timeZone: 'UTC',
     }));
-    const weekdays = days.map(day => new Date(`${day.date}T00:00:00Z`).toLocaleDateString('en-GB', { weekday: 'short', timeZone: 'UTC' }));
     const maximum = Math.max(1, Math.ceil(Math.max(...values) * 1.08));
-    // Keep the existing chart styling with fourteen daily bars, weekday labels and the latest seven highlighted.
+    // Twelve calendar weeks; the final four match the KPI reporting window.
     all('[data-pi-orders-mini]').forEach(el => {
-      el.outerHTML = miniTrend({ title: 'Orders per day', liveMetric: 'piOrders',
-        type: 'bar', values, weeks: labels, weekdays, shadeCount: 7, max: maximum, fmt: String }, '#2DBD7F');
+      el.outerHTML = miniTrend({ title: 'Orders per week', liveMetric: 'piOrders',
+        type: 'bar', values, weeks: labels, shadeCount: 4, max: maximum, fmt: String }, '#2DBD7F');
     });
     all('[data-pi-orders-main]').forEach(el => {
-      el.outerHTML = svgTrend({ title: 'Orders per day', liveMetric: 'piOrders',
+      el.outerHTML = svgTrend({ title: 'Orders per week', liveMetric: 'piOrders',
         type: 'bar', w: window.DashboardUI.chartWidth(el,984), h: 282, labelSize: 15, series: [{ values }],
-        weeks: labels, weekdays, shadeCount: 7, max: maximum, fmt: String }, '#2DBD7F');
+        weeks: labels, shadeCount: 4, max: maximum, fmt: String }, '#2DBD7F');
     });
   }
 
@@ -162,7 +161,7 @@
     set('[data-pi-orders-value]', orders.count === null ? '—' : format(orders.count));
     set('[data-pi-orders-change]', data.stale ? 'Stale' : delta(orders.change_percent));
     title('[data-pi-orders-value], [data-pi-orders-change]', `${orders.definition} ${orders.coverage.first_confirmation_dates} orders use first-confirmation dates. ${metadata}`);
-    if (orders.count !== null) drawOrders(orders.trend_daily);
+    if (orders.count !== null) drawOrders(orders.trend_weekly);
     const successful = orders.successful_orders;
     set('[data-pi-successful-orders-value]', successful.count === null ? '—' : format(successful.count));
     set('[data-pi-successful-orders-change]', data.stale ? 'Stale' : successful.unknown ? 'Incomplete' : delta(successful.change_percent));
@@ -245,3 +244,4 @@
   for (const event of ['dashboard:pagechange','dashboard:resize']) window.addEventListener(event,()=>{if(lastGood && !loading) render(lastGood);});
   load();
 })();
+

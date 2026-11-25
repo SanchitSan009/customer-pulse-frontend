@@ -19,13 +19,14 @@
       el.querySelector('.fill').style.width=base&&value!=null?(value/base*100)+'%':'0%';
     });
   }
-  function trend(el,records,field,accent,title,type='line',height=124){
+  function trend(el,records,field,accent,title,type='line',height=160){
     if(!el)return;
     if(!records.length){window.DashboardUI.empty(el,'No recorded activity');return;}
     const values=records.map(row=>row[field]);
     el.style.height=height+'px';
-    el.innerHTML=svgTrend({w:380,h:height,min:0,max:Math.max(1,...values.filter(v=>v!=null))*(type==='bar'?1.12:1.25),
-      weeks:records.map(row=>weekLabel(row.start)),title,type,shadeCount:4,everyOther:true,labelSize:12,
+    const width=window.DashboardUI.chartWidth(el,556);
+    el.innerHTML=svgTrend({w:width,h:height,min:0,max:Math.max(1,...values.filter(v=>v!=null))*(type==='bar'?1.12:1.25),
+      weeks:records.map(row=>weekLabel(row.start)),title,type,shadeCount:4,everyOther:true,labelSize:12,labelAll:true,
       fmt:value=>field==='median_seconds'?Number(value.toFixed(1))+'s':number(value),series:[{values}]},accent);
     el.title='12 calendar weeks · '+title+'. Last 4 reporting weeks highlighted; missing durations leave gaps.';
   }
@@ -93,25 +94,25 @@
   }
   function renderWeekly(data){
     const el=one('[data-total-weekly]'),latest=one('[data-total-latest]');
-    const records=data.weekly;
+    const records=data.weekly.slice(-12);
     latest.textContent=records.length&&records.at(-1).value!=null?number(records.at(-1).value):'—';
     if(!records.length&&data.metrics.conversations.value===0){latest.textContent='0';el.innerHTML='<span class="summary-unavailable">No conversations recorded</span>';return;}
     if(!records.length||records.some(row=>row.value==null)){
       el.innerHTML='<svg width="548" height="62" viewBox="0 0 548 62"><text x="274" y="36" text-anchor="middle" font-size="13" class="tp">Weekly totals unavailable</text></svg>';return;
     }
     const w=548,h=62,band=w/records.length,base=60,top=20,max=Math.max(1,...records.map(row=>row.value));
-    let svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="All-time weekly chats and PI journeys from connected sources">`;
-    const step=Math.max(1,Math.ceil(48/band));
+    let svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Last 12 weeks of chats and PI journeys from connected sources; last 4 weeks highlighted">`;
+    svg+=`<rect x="${band*Math.max(0,records.length-4)}" y="0" width="${band*Math.min(4,records.length)}" height="${h}" rx="6" fill="#FFFFFF" opacity="0.045"/>`;
     records.forEach((row,i)=>{
       const y=base-row.value/max*(base-top),x=band*(i+.5),bw=Math.min(28,band*.65);
-      svg+=`<path d="${barPath(x-bw/2,y,base,bw)}" fill="#019EFF" opacity="${i===records.length-1?1:.45}"><title>${row.start} to ${row.end}: ${number(row.value)} chats / journeys</title></path>`;
-      if(i%step===0||i===records.length-1)svg+=`<text x="${x}" y="${y-6}" font-size="11" text-anchor="middle" class="${i===records.length-1?'tw':'tp'}">${number(row.value)}</text>`;
+      svg+=`<path d="${barPath(x-bw/2,y,base,bw)}" fill="#019EFF" opacity="${i>=records.length-4?1:.4}"><title>${row.start} to ${row.end}: ${number(row.value)} chats / journeys</title></path>`;
+      svg+=`<text x="${x}" y="${y-6}" font-size="11" text-anchor="middle" class="${i>=records.length-4?'tw':'tp'}">${number(row.value)}</text>`;
     });
     el.innerHTML=svg+'</svg>';
-    el.title='All recorded weeks in IST, including the latest partial week. Undated starts cannot be placed on the chart.';
+    el.title='Latest 12 calendar weeks in IST, including the latest partial week. Last 4 weeks highlighted. Undated starts cannot be placed on the chart.';
   }
   function render(data){
-    window.DashboardSummary.header='All time · '+data.sources.filter(s=>s.status!=='unavailable').length+'/3 connected sources'+(data.stale?' · Stale snapshot':'')+' · Castrol not connected';
+    window.DashboardSummary.header='All time · '+data.sources.filter(s=>s.status!=='unavailable').length+'/3 connected sources'+(data.stale?' · Stale snapshot':'');
     window.dispatchEvent(new CustomEvent('dashboard:summary'));
     const strip=one('.live-summary');strip.dataset.summaryStatus=data.stale?'stale':data.complete?'ready':'incomplete';
     for(const [key,metric] of Object.entries(data.metrics)){

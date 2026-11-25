@@ -1,13 +1,13 @@
 /* Shared presentation and source state. Adapters remain responsible for data. */
 (() => {
   const states = Object.fromEntries(['pi','agricon','canon'].map(key=>[key,{status:'loading'}]));
-  const labels = {pi:'PI Industries',agricon:'Agricon',canon:'Canon',castrol:'Castrol'};
+  const labels = {pi:'PI Industries',agricon:'Agricon',canon:'Canon'};
   const escape = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const number = value => new Intl.NumberFormat('en-IN').format(value);
   const date = value => value ? new Date(value+'T00:00:00Z').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric',timeZone:'UTC'}) : '—';
   const scope = (source,data) => source==='canon' ? (data?.period?`${date(data.period.start)} – ${date(data.period.end)} · IST · 4 completed weeks`:'Last 4 completed weeks · IST') : data?.period ? `${date(data.period.start)} – ${date(data.period.end)} · ${source==='agricon'?'WIB · 4 completed weeks':'IST · includes current week'}` : 'Reporting period available after connection';
   const sourceStatus = state => ({ready:'Live',loading:state.data?'Refreshing':'Connecting',stale:'Stale',error:'Unavailable'})[state.status];
-  const stateMarkup = (source,state) => `<span class="source-state" data-status="${state.status}"><i class="status-dot" aria-hidden="true"></i>${escape(labels[source])} · ${sourceStatus(state)}</span>`;
+  const stateMarkup = (source,state) => `<span class="source-state" data-status="${state.status}">${escape(labels[source])} · ${sourceStatus(state)}</span>`;
   function report(source, data) {
     const previous=states[source];
     if (data.state) states[source]={...previous,status:data.state,error:data.error};
@@ -20,37 +20,31 @@
     Object.entries(states).forEach(([key,state])=>{
       document.querySelectorAll(`[data-source="${key}"]`).forEach(el=>{
         el.dataset.status=state.status;
-        el.querySelectorAll('.kpi-live-dot').forEach(dot=>dot.setAttribute('aria-label',`${labels[key]} data: ${sourceStatus(state)}`));
         const badge=el.querySelector('.live');
-        if(badge) {badge.innerHTML=`<i class="status-dot" aria-hidden="true" style="background:${state.status==='ready'?'var(--green)':state.status==='error'?'#F07178':'var(--amber)'}"></i>${sourceStatus(state)}`;badge.setAttribute('aria-label',`${labels[key]} data: ${sourceStatus(state)}`);}
+        if(badge) {badge.textContent=sourceStatus(state);badge.setAttribute('aria-label',`${labels[key]} data: ${sourceStatus(state)}`);}
       });
 
     });
-    document.querySelectorAll('[data-source="castrol"] .live').forEach(el=>{el.textContent=el.closest('.overview')?'No feed':'Demo';el.setAttribute('aria-label',el.closest('.overview')?'Castrol has no connected live source':'Castrol sample data');});
     const ready=Object.values(states).filter(s=>s.status==='ready').length;
     const liveCount=document.querySelector('[data-live-source-count]');
     if(liveCount)liveCount.textContent=`${ready}/3`;
     const header=document.querySelector('header .sub');
-    if(header) header.textContent=source==='castrol'?'Castrol · Demo data':source?`${labels[source]} · ${scope(source,states[source]?.data)}`:(window.DashboardSummary?.header || 'All time · Connecting live sources');
+    if(header) header.textContent=source?`${labels[source]} · ${scope(source,states[source]?.data)}`:(window.DashboardSummary?.header || 'All time · Connecting live sources');
     const health=document.getElementById('sourceHealth');
     if(health)health.innerHTML=Object.entries(states).map(([key,state])=>stateMarkup(key,state)).join('');
     const badge=document.getElementById('connectionSummary');
-    if(badge)badge.textContent=source==='castrol'?'Demo data':source?`${labels[source]} · ${sourceStatus(states[source])}`:`${ready}/3 sources live · 1 demo`;
+    if(badge)badge.textContent=source?`${labels[source]} · ${sourceStatus(states[source])}`:`${ready}/3 sources live`;
     const context=document.getElementById('dataContext');
     const open=context.querySelector('details')?.open;
-    if(source==='castrol') {
-      context.innerHTML='<div class="context-copy"><strong>Castrol · Demo data</strong><div class="context-meta">Illustrative values. This agent is not connected to a live source.</div></div>';
-    } else {
       const state=states[source];
       const data=state?.data;
       const main=source?`${labels[source]} · ${scope(source,data)}`:'All available data · live sources only';
       const updated=data?.last_updated?`Updated ${new Date(data.last_updated).toLocaleString('en-GB',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',timeZone:'Asia/Kolkata'})} IST · `:'';
-      const meta=source ? updated+(state.status==='loading'?'Fetching the latest snapshot. Canon can take a few minutes.':state.status==='stale'?'Refresh failed. Showing the last successful snapshot.':state.status==='error'?'Source unavailable. Try refreshing.':'Refreshes every 5 minutes.') : 'All-time totals across connected sources. Castrol has no live feed and is excluded.';
-      const explanation=source==='canon'?'Canon detail KPIs and charts cover sessions first started in the last four completed weeks in IST. Only events inside that period count. Product cards measure recommendations displayed; they do not represent sales. The overview card uses this same period.':source==='agricon'?'KPIs use the last four completed weeks in Jakarta time. FA approval is approved / reviewed. HQ verification is latest verified / FA approved, including pending. Processing time measures automated function execution, not human review.':'PI KPIs include the current partial week in IST and compare with the preceding four weeks. Daily charts show 14 days. An unavailable value means the source does not support that metric.';
+      const meta=source ? updated+(state.status==='loading'?'Fetching the latest snapshot. Canon can take a few minutes.':state.status==='stale'?'Refresh failed. Showing the last successful snapshot.':state.status==='error'?'Source unavailable. Try refreshing.':'Refreshes every 5 minutes.') : 'All-time totals across connected sources.';
+      const explanation=source==='canon'?'Canon detail KPIs and charts cover sessions first started in the last four completed weeks in IST. Only events inside that period count. Product cards measure recommendations displayed; they do not represent sales. The overview card uses this same period.':source==='agricon'?'KPIs use the last four completed weeks in Jakarta time. FA approval is approved / reviewed. HQ verification is latest verified / FA approved, including pending. Processing time measures automated function execution, not human review.':'PI KPIs include the current partial week in IST and compare with the preceding four weeks. Orders show 12 calendar weeks, including the current partial week; cart-to-order timing shows 12 weekly medians. An unavailable value means the source does not support that metric.';
       const busy=source?state.status==='loading':Object.values(states).some(s=>s.status==='loading');
-      context.innerHTML=`<div class="context-copy"><strong>${escape(main)}</strong><div class="context-meta" role="status">${escape(meta)}</div></div><div class="context-actions"><details ${open?'open':''}><summary>About the data</summary><p>${escape(source?explanation:'Landing-page totals use all available source data. PI contributes journeys rather than verified chat sessions. Castrol has no live feed and is excluded. Source cards use their reporting periods and 12-week trends; only the summary strip uses all-time totals.')}${state?.error?'<br>'+escape(state.error):''}</p></details><button class="refresh-button" type="button" ${busy?'disabled':''}>${busy?'Refreshing…':'Refresh data'}</button></div>`;
+      context.innerHTML=`<div class="context-copy"><strong>${escape(main)}</strong><div class="context-meta" role="status">${escape(meta)}</div></div><div class="context-actions"><details ${open?'open':''}><summary>About the data</summary><p>${escape(source?explanation:'Landing-page totals use all available source data. PI contributes journeys rather than verified chat sessions. Source cards use their reporting periods and 12-week trends; only the summary strip uses all-time totals.')}${state?.error?'<br>'+escape(state.error):''}</p></details><button class="refresh-button" type="button" ${busy?'disabled':''}>${busy?'Refreshing…':'Refresh data'}</button></div>`;
       context.querySelector('button').addEventListener('click',()=>window.dispatchEvent(new CustomEvent('dashboard:refresh',{detail:{source:source||'all'}})));
-    }
     document.querySelectorAll('.ht .d,.kpi .d').forEach(el=>{
       const b=el.querySelector('b'), suffix=el.querySelector('.comparison-label');
       if(!b || !suffix) return;
@@ -66,7 +60,7 @@
     const parent=el.parentElement, style=getComputedStyle(parent);
     return Math.max(240,Math.round(parent.clientWidth-parseFloat(style.paddingLeft)-parseFloat(style.paddingRight)));
   }
-  function cartTimeChart(days, width=526) {
+  function cartTimeChart(days, width=526, {weekly=false}={}) {
     const w=Math.max(240,width),h=226,left=44,right=w-18,top=24,bottom=174;
     const values=days.filter(day=>day.median_minutes!==null);
     if(!values.length)return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="No matched completions"><text x="${w/2}" y="${h/2}" text-anchor="middle" class="tp" font-size="13">No matched completions</text></svg>`;
@@ -80,8 +74,8 @@
     const date=value=>new Date(`${value}T00:00:00Z`);
     const label=value=>date(value).toLocaleDateString('en-GB',{day:'numeric',month:'short',timeZone:'UTC'});
     const weekday=value=>date(value).toLocaleDateString('en-GB',{weekday:'short',timeZone:'UTC'});
-    const shade=x(Math.max(0,days.length-7))-band/2;
-    let svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="Daily median cart-to-order time in minutes; missing days have no data point"><rect x="${Math.max(left,shade).toFixed(1)}" y="${top-12}" width="${(right-Math.max(left,shade)+8).toFixed(1)}" height="${bottom-top+12}" rx="8" fill="#fff" opacity="0.045"/>`;
+    const shade=x(Math.max(0,days.length-(weekly?4:7)))-band/2;
+    let svg=`<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${weekly?'Weekly':'Daily'} median cart-to-order time in minutes; missing ${weekly?'weeks':'days'} have no data point"><rect x="${Math.max(left,shade).toFixed(1)}" y="${top-12}" width="${(right-Math.max(left,shade)+8).toFixed(1)}" height="${bottom-top+12}" rx="8" fill="#fff" opacity="0.045"/>`;
     for(let i=0;i<=Math.round(maximum/step);i++) {
       const value=i*step,cy=y(value).toFixed(1);
       svg+=`<line x1="${left}" x2="${right}" y1="${cy}" y2="${cy}" stroke="#2a2d36" opacity="${i===0?.9:.5}"/><text x="${left-10}" y="${(+cy+4).toFixed(1)}" text-anchor="end" font-size="13" class="tx">${tick(value)}</text>`;
@@ -93,11 +87,11 @@
       const cx=x(i).toFixed(1),p=points[i];
       svg+=`<line x1="${cx}" x2="${cx}" y1="${bottom}" y2="${bottom+4}" stroke="#404651"/>`;
       if(p) {
-        svg+=`<circle data-day-index="${i}" cx="${cx}" cy="${p[1].toFixed(1)}" r="3.5" fill="#2dbd7f" stroke="#111216" stroke-width="2"><title>${escape(day.date)}: ${day.median_minutes} min median · ${day.count} completions</title></circle>`;
-        if(i%labelStep===0||i===days.length-1)svg+=`<text x="${cx}" y="${(p[1]-11).toFixed(1)}" text-anchor="middle" class="tp" font-size="14">${day.median_minutes.toFixed(1)}</text>`;
+        svg+=`<circle data-day-index="${i}" cx="${cx}" cy="${p[1].toFixed(1)}" r="3.5" fill="#2dbd7f" stroke="#111216" stroke-width="2"><title>${escape(day.date)}${weekly?' to '+escape(day.end):''}: ${day.median_minutes} min median · ${day.count} completions${day.partial?' · partial week':''}</title></circle>`;
+        svg+=`<text data-value-index="${i}" x="${cx}" y="${(p[1]-11).toFixed(1)}" text-anchor="middle" class="tp" font-size="14">${day.median_minutes.toFixed(1)}</text>`;
       } else svg+=`<text data-no-observations="${i}" x="${cx}" y="${(top+bottom)/2}" text-anchor="middle" class="tx" font-size="15">—<title>${escape(day.date)}: no matched completions; no median available</title></text>`;
       if((i%labelStep===0 && days.length-1-i>=labelStep)||i===days.length-1) {
-        svg+=`<text data-day-index="${i}" x="${cx}" y="200" text-anchor="middle" class="tx" font-size="13">${weekday(day.date)}</text><text data-day-index="${i}" x="${cx}" y="217" text-anchor="middle" class="tx" font-size="13">${label(day.date)}</text>`;
+        svg+=`<text data-day-index="${i}" x="${cx}" y="200" text-anchor="middle" class="tx" font-size="13">${weekly?'Week of':weekday(day.date)}</text><text data-day-index="${i}" x="${cx}" y="217" text-anchor="middle" class="tx" font-size="13">${label(day.date)}</text>`;
       }
     });
     return svg+'</svg>';
@@ -162,24 +156,7 @@
     svg+=`<text x="${cx}" y="${cy+1}" text-anchor="middle" font-size="42" class="tw">${percent.toFixed(1)}%</text><text x="${cx}" y="${cy+29}" text-anchor="middle" font-size="14" class="tp">sent 2+ messages</text><text x="279" y="26" font-size="14" class="tp">Customer messages per chat</text><text x="342" y="277" text-anchor="middle" font-size="15" class="tp">Each chat appears once · ${escape(depth.scope_label||'All available data')}</text></svg>`;
     el.innerHTML=svg;
   }
-  function redrawDemo() {
-    const c=CUSTOMERS[3], page=document.querySelector('.page.on[data-source="castrol"]');
-    if(page) {
-      const main=page.querySelector('.row2 .panel>svg');
-      if(main)main.outerHTML=svgTrend({...c.detail.main,w:chartWidth(main,984),h:282},c.accent);
-      const secondary=page.querySelector('.row3 .panel:nth-child(2)>svg,.row3 .panel:nth-child(2)>[data-demo-categories]');
-      if(secondary) {
-        const width=chartWidth(secondary,526);
-        if(width<440){secondary.outerHTML='<div data-demo-categories></div>';categories(page.querySelector('[data-demo-categories]'),c.detail.second.cats.map(([label,sessions])=>({label,sessions})),c.accent,value=>value.toFixed(1)+'%');}
-        else secondary.outerHTML=svgColumns({...c.detail.second,w:width,h:226},c.accent);
-      }
-    }
-    const mini=document.querySelector('.page.on.overview [data-source="castrol"] .chart');
-    if(mini)empty(mini,'No live source connected.');
-  }
   window.DashboardUI={report,chartWidth,cartTimeChart,funnel,categories,empty,activityHeatmap,conversationDepth};
-  for(const event of ['dashboard:pagechange','dashboard:resize'])window.addEventListener(event,redrawDemo);
-  redrawDemo();
   window.addEventListener('dashboard:pagechange',paint);
   window.addEventListener('dashboard:summary',paint);
   let resizeTimer;
