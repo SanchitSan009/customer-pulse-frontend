@@ -1,0 +1,5 @@
+Boundary source: https://github.com/datta07/INDIAN-SHAPEFILES
+File: INDIA/INDIA_STATES.geojson
+Last file commit: 7b003e3e8c35491fadf71ced7f168f18a7423bf3
+Changes: Mercator projection, rounded SVG coordinates, canonical state names; merged Dadra and Nagar Haveli / Daman and Diu. 36 states and UTs.
+Data is a visualization source, not a survey or navigation product.
